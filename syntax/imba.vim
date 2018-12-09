@@ -20,33 +20,41 @@ endif
 syn keyword imbaBoolean true false yes no on off
 hi def link imbaBoolean Boolean
 
-syn keyword imbaKeyword import await typeof extends super yield new in
-syn keyword imbaKeyword of by and or not is isnt isa var let tagdef expr
-
 syn match imbaMethod /\w\+/ display contained
 hi def link imbaMethod Function
 
+syn keyword imbaIncludeKeyword import export from await typeof extends super extern
+hi def link imbaIncludeKeyword Include
+
+syn keyword imbaKeyword by and or not is isnt isa tagdef expr
 syn keyword imbaKeyword def class tag nextgroup=imbaMethod skipwhite
-hi def link imbaKeyword Structure
+hi def link imbaKeyword Operator
 
-syn keyword Structure prop
+" javascript built-in keywords (https://github.com/pangloss/vim-javascript/blob/dd84369d731bcb8feee0901cbb9b63a2b219bf28/syntax/javascript.vim#L112)
+syn keyword jsGlobalObjects      Array Boolean Date Function Iterator Number Object Symbol Map WeakMap Set WeakSet RegExp String Proxy Promise Buffer ParallelArray ArrayBuffer DataView Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray JSON Math console document window Intl Collator DateTimeFormat NumberFormat fetch
+syn keyword jsGlobalNodeObjects  module exports global process __dirname __filename
+syn keyword jsExceptions         Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError DOMException
+syn keyword jsBuiltins           decodeURI decodeURIComponent encodeURI encodeURIComponent eval isFinite isNaN parseFloat parseInt uneval
+syn keyword jsGlobalObjects  DOMImplementation DocumentFragment Document Node NodeList NamedNodeMap CharacterData Attr Element Text Comment CDATASection DocumentType Notation Entity EntityReference ProcessingInstruction
+hi def link jsGlobalObjects Constant
+hi def link jsGlobalNodeObjects Constant
+hi def link jsExceptions Constant
+hi def link jsBuiltins Constant
 
-syn keyword imbaConditional if else elif unless switch then when 
+syn keyword Constant require
+syn keyword Structure prop let var const
+
+syn keyword imbaConditional if else elif unless switch then when
 hi def link imbaConditional Conditional
 
-syn keyword imbaStatement continue break throw return
+syn keyword imbaStatement continue break throw return yield debugger
 hi def link imbaStatement Statement
 
-syn keyword imbaRepeat do for while until 
+syn keyword imbaRepeat do for while until
 hi def link imbaRepeat Repeat
 
-syn keyword imbaException try catch finally 
+syn keyword imbaException try catch finally
 hi def link imbaException Exception
-
-syn keyword imbaFunction log warn
-syn keyword imbaFunction sin cos
-syn keyword imbaFunction append
-hi def link imbaFunction Function
 
 syn match imbaNumber "-\=\<\d\+L\=\>\|0[xX][0-9a-fA-F]\+\>"
 syn match imbaNumber /\<\%(Infinity\|NaN\)\>/ display
@@ -67,7 +75,7 @@ syn region Comment start=/\/\*/ end=/\*\// contains=imbaTodo
 syn region Comment start=/###/ end=/###/ contains=imbaTodo
 hi def link imbaTodo Todo
 
-syn match imbaOperator /\<\%(instanceof\|typeof\|delete\)\>/ display
+syn keyword imbaOperator instanceof typeof delete void new in of
 hi def link imbaOperator Operator
 
 " The first case matches symbol operators only if they have an operand before.
@@ -82,7 +90,8 @@ hi def link imbaRegex String
 syn match imbaSpecialOp /[,;]/ display
 hi def link imbaSpecialOp Delimiter
 
-syn keyword imbaSpecialVar this prototype arguments self Math console
+syn keyword imbaSpecialVar this prototype arguments self Imba
+syn match imbaSpecialVar /\$\$/
 hi def link imbaSpecialVar Special
 
 syn match imbaSpecialIdent /@\%(\%(\I\|\$\)\%(\i\|\$\)*\)\?/ display
@@ -94,18 +103,15 @@ hi def link imbaGlobal Type
 syn match imbaConstant /\<\u[A-Z0-9_]\+\>/ display
 hi def link imbaConstant Constant
 
-syn cluster imbaIdentifier contains=imbaSpecialVar,imbaSpecialIdent,imbaObject,imbaConstant 
-
-syn match imbaObjAssign /@\?\%(\I\|\$\)\%(\i\|\$\)*\s*\ze::\@!/ contains=@imbaIdentifier display
-hi def link imbaObjAssign Identifier
+syn cluster imbaIdentifier contains=imbaSpecialVar,imbaSpecialIdent,imbaObject,imbaConstant
 
 " Tags (html-like markup)
 " From http://stackoverflow.com/a/13620967 and html.vim
-syn match imbaTagAttributeName /\w\+=/he=e-1 contained
-syn match imbaTagAttribute contained "\w\+=[^"]\S\+" contains=imbaTagAttributeName,String,imbaBoolean,Variable
-syn region imbaTagAttribute contained start=+\w\+="+ skip=+\\\\\|\\"+ end=+"+ contains=imbaTagAttributeName,String,imbaBoolean,Variable keepend
+syn match imbaTagAttributeName /[a-z0-9\-]\+=/he=e-1 contained
+syn match imbaTagAttributeWithoutQuotes contained "[a-z0-9\-]\+=[^"> ]\+" contains=imbaTagAttributeName,String,imbaBoolean,Variable,imbaNumber
+syn region imbaTagAttribute contained start=+[a-z0-9\-]\+="+ skip=+\\\\\|\\"+ end=+"+ contains=imbaTagAttributeName,String,imbaBoolean,Variable keepend
 syn match imbaTagName /<\i\+/ contained contains=imbaTagStart
-syn region imbaTag start=/<\w\+/ end=/>/ contains=imbaTagName,imbaTagAttribute
+syn region imbaTag start=/<\w\+/ end=/>/ contains=imbaTagName,imbaTagAttribute,imbaTagAttributeWithoutQuotes
 syn match imbaTagStart '<' contained
 
 hi def link imbaTag Function
