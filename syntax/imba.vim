@@ -127,6 +127,11 @@ hi def link imbaSemicolonError Error
 syn match imbaWrongComment /^\s*\/\/.*$/ display
 hi def link imbaWrongComment Error
 
+" css blocks
+syn include @imbaCss syntax/css.vim
+unlet b:current_syntax
+syn region cssRegion start=+^###\s*\<css\>+ end=+^###+ contains=@imbaCss fold
+
 " Cleanup
 
 let b:current_syn = "imba"
